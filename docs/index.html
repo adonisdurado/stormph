@@ -1,1 +1,587 @@
-<html><body><p>Hello World</p></body></html>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Philippine Storm Map</title>
+
+    <!-- bootstrap css -->
+    <link href='https://unpkg.com/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' />
+
+    <!-- mapbox gl css -->
+    <link href="https://unpkg.com/mapbox-gl/dist/mapbox-gl.css" rel="stylesheet" />
+
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital@0;1&family=Trade+Winds&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        /* image */
+        .bkg-img-cover {
+            background-image: url(images/Eye.png);
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-height: 500px;
+        }
+
+        .big-head {
+            font-size: 4rem;
+            color: red;
+            font-family: 'Trade Winds';
+            padding-top: 27%;
+        }
+
+        .subhead {
+            font-size: 1.5rem;
+            font-family: 'Merriweather';
+            font-weight: 500;
+        }
+
+        .intro {
+            font-size: 1.1rem;
+            font-family: 'Merriweather';
+            font-weight: 500;
+        }
+
+        div.a {
+            line-height: 1.6;
+        }
+
+        .sidebar {
+            font-size: 1rem;
+            font-family: 'Merriweather';
+            font-weight: 500;
+        }
+
+        .credit {
+            font-size: 0.8rem;
+            font-family: 'Merriweather';
+            font-weight: 500;
+        }
+
+        div.b {
+            line-height: 1.4;
+        }
+
+        /* map */
+        .map {
+            width: 100%;
+            height: 550px;
+        }
+
+        /* popup */
+        .mapboxgl-popup-content {
+            box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+            padding: 15px 16px 13px 16px;
+            font-size: 13px;
+        }
+
+        .pop {
+            font-size: 15px;
+            font-weight: 400;
+        }
+
+        .bold {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .bolder {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .dotted-line {
+            border-top-style: dotted;
+            border-width: 5px;
+            border-color: #b5b7bb;
+        }
+
+        body {
+            background: #EAE4D8 !important;
+        }
+
+        /* map */
+        .badge {
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .badge-storm1 {
+            color: #212529;
+            background-color: #CCFFFF
+        }
+
+        .badge-storm2 {
+            color: #212529;
+            background-color: #CC99FF
+        }
+
+        .badge-storm3 {
+            color: #212529;
+            background-color: #CC9999
+        }
+
+        .badge-storm4 {
+            color: #212529;
+            background-color: #F8B281
+        }
+
+        .badge-storm5 {
+            color: #ffffff;
+            background-color: #DF1F26
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- header -->
+    <div class="bkg-img-cover">
+        <div class="big-head text-center">In The Eye Of The Storm</div>
+    </div>
+
+    <!-- layout -->
+    <div class="container">
+        <div class="row justify-content-center">
+
+            <!-- intro -->
+            <div class="col-md-9 mt-5">
+                <div class="subhead text-center"><em>Seven Decades of Philippine Typhoon Tracks</em></div>
+            </div>
+
+            <div class="col-md-9 mt-3">
+                <div class="intro">Sitting in the tropical cyclone belt, the Philippines receives an average of
+                    20 storms per year, which makes it the most storm-exposed country on the planet. After the
+                    catastrophic aftermath of Typhoon Yolanda (Haiyan) and several other powerful typhoons that
+                    followed, the country’s meteorological agency decided to reclassify its four-level warning system
+                    into five categories. Added on top of the list is a category for stronger cyclones reaching a
+                    sustained wind of 220 kilometers per hour (136 mph or 119 knots). And these mega-storms have a
+                    vicious name – Super Typhoon. This graphic explores the readjustment of the past storms to uncover
+                    how many other Super Typhoons had pummeled the Philippine coastline since 1949, the year when
+                    advancement in meteorology began recording wind intensity. The sources of the dataset below are from
+                    the China Meteorological Agency, Hong Kong Observatory, and US Agency.
+                </div>
+            </div>
+
+            <!-- buttons -->
+            <div class="col-md-9 mt-4">
+                <div class="text-center justify-content-center">
+                    <button id="btn0" type="button" class="btn btn-outline-secondary btn-sm mr-1">Hide
+                        storms</button>
+                    <button id="btn1" type="button" class="btn-danger btn-sm btn-5yr active mr-1"
+                        data-file="Strongest">25
+                        Strongest Typhoons</button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary btn-sm">Every Five Years</button>
+                        <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu btn-secondary btn-sm" role="menu">
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="20162019">2016-2019</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="20112015">2011-2015</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="20062010">2006-2010</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="20012005">2001-2005</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="19962000">1996-2000</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="19911995">1991-1995</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="19861990">1986-1990</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="19811985">1981-1985</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="19761980">1976-1980</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="19711975">1971-1975</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="19661970">1966-1970</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="19611965">1961-1965</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="19561960">1956-1960</a>
+                            </li>
+                            <li><a class="btn-outline-secondary btn-sm btn-5yr" data-file="19511955">1951-1955</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- map -->
+        <div class="row justify-content-center">
+            <div class="col-md-11 mt-4">
+                <div id="map" class="map"></div>
+            </div>
+            <div class="justify-content-center mt-3">
+                <span class="badge m-3">
+                    <p>Sustained Wind</p>
+                </span>
+                <span class="badge badge-pill badge-storm1">20-37 mph</span>
+                <span class="badge badge-pill badge-storm2">38–73 mph</span>
+                <span class="badge badge-pill badge-storm3">74–105 mph</span>
+                <span class="badge badge-pill badge-storm4">106–137 mph</span>
+                <span class="badge badge-pill badge-storm5"> >137 mph</span>
+            </div>
+        </div>
+
+        <!-- sidebar -->
+        <div class="row justify-content-center">
+            <div class="col-md-9">
+                <hr class="dotted-line">
+                <div class="subhead text-center"><em>The Most Damaging Typhoons</em></div>
+                <div class="sidebar">
+                    Super Typhoon Yolanda was one of the most powerful tropical cyclones ever recorded. On making
+                    landfall, it devastated portions of Southeast Asia, particularly the Philippines. In modern
+                    meteorological records, it is the deadliest Philippine typhoon and the second worldwide after
+                    Hurricane Patricia. The death toll reached 6,300 people in the Philippines alone, and about 16
+                    million people were affected and displaced, according to UN officials. It’s is also the costliest
+                    typhoon with an estimate of ₱95.5 billion ($2.2 billion) damages. It took two years for Tacloban
+                    City (image below), the ground zero of the disaster, to be back on its feet.
+                </div>
+            </div>
+        </div>
+
+        <!-- before after -->
+        <div class="row justify-content-center my-3">
+            <div class="col-md-9 mt-3">
+                <iframe frameborder="0" class="juxtapose" width="100%" height="620"
+                    src="https://cdn.knightlab.com/libs/juxtapose/latest/embed/index.html?uid=ac5e6ee4-7d88-11ea-a879-0edaf8f81e27"></iframe>
+            </div>
+        </div>
+
+        <!-- chart -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-9 mb-3">
+                <div class="sidebar">
+                    Below are the 10 most destructive typhoons that ravaged the country.
+                </div>
+            </div>
+            <div class="col-md-9 padding-top-1 embed-responsive embed-responsive-16by9">
+                <iframe frameborder="0" height="80%"
+                    src="https://mdbootstrap.com/api/snippets/embed/1982450/fullscreen"></iframe>
+            </div>
+            <div class="col-md-9">
+                <div class="credit mt-2"> SOURCES: <em> National Oceanic and Atmospheric Administration / Philippine
+                        Atmospheric, Geophysical and Astronomical Services Administration / National Aeronautics and
+                        Space Administration / Philippine Statistics Authority / World Meteorological Organization /
+                        Natural Earth Data / Physical Geography / Google Map </em>
+                </div>
+            </div>
+        </div>
+
+        <!-- space -->
+        <div class="row justify-content-center mb-5"></div>
+
+    </div>
+
+
+    <!-- bootstrap dependencies: jquery, popper, bootstrap -->
+    <script src='https://unpkg.com/jquery/dist/jquery.min.js'></script>
+    <script src='https://unpkg.com/popper.js/dist/umd/popper.min.js'></script>
+    <script src='https://unpkg.com/bootstrap/dist/js/bootstrap.min.js'></script>
+
+    <!-- lodash -->
+    <script src='https://unpkg.com/lodash/lodash.min.js'></script>
+
+    <!-- mapbox gl js -->
+    <script src='https://unpkg.com/mapbox-gl/dist/mapbox-gl.js'></script>
+
+    <!-- geojson layers -->
+    <script src='js/parBoundary.js'></script>
+
+    <script>
+        // global vars
+        let map;
+        let popup = new mapboxgl.Popup({
+            offset: 12
+        });
+        let par = parBoundary;
+        let storms = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        let nostorms = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+        let stormList;
+
+        // helper function to format numbers
+        let numStr = function (num) {
+            if (num === 'NA' || num === '' || isNaN(num)) {
+                return num;
+            } else {
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+        };
+
+        //updates 'storms-src' with new geojson
+        let updateStormLayer = function (data) {
+            storms = data;
+            map.getSource('storms-src').setData(storms);
+        };
+
+        //fetch a geojson file
+        let fetchGeoJson = function (url = undefined) {
+            if (url == undefined) {
+                updateStormLayer(nostorms);
+            } else {
+                fetch(url)
+                    //success
+                    .then(function (response) {
+                        if (response.ok) {
+                            //let data = response.text();
+                            //console.log(data);
+                            return response.json();
+                        }
+                        throw new Error('FAILED TO FETCH GEOJSON:', url);
+                    })
+                    //error
+                    .catch(function (e) {
+                        console.log(e);
+                    })
+
+                    .then(function (data) {
+                        updateStormLayer(data);
+                    });
+            };
+        };
+
+        // show popup
+        let showPopup = function (e) {
+            //
+            let data = e.features[0].properties;
+            let coords = e.lngLat;
+
+            // SID: "2017347N11129"
+            // SEASON: 2017
+            // NUMBER: 105
+            // BASIN: "WP"
+            // SUBBASIN: "MM"
+            // NAME: "KAI-TAK"
+            // ISO_TIME: "2017/12/17 00:00:00"
+            // NATURE: "TS"
+            // LAT: 12.2
+            // LON: 124.08
+            // DIST2LAND: 15
+            // LANDFALL: 0
+            // USA_WIND: 25
+            // USA_PRES: 1004
+            // CMA_LAT: 12.1
+            // CMA_LON: 124.1
+            // CMA_CAT: 2
+            // CMA_WIND: 34
+            // CMA_PRES: 1000
+            // HKO_LAT: 12
+            // HKO_LON: 124.3
+            // HKO_CAT: "TD"
+            // HKO_WIND: 30
+            // HKO_PRES: 1000
+            // STORM_SPD: 12
+            // STORM_DR: 266
+            // year: 2017
+            // month: 12
+            // day: 17
+            // hour: 0
+            // min: 0
+
+            //
+            let cat = function (wind) {
+                // https://en.wikipedia.org/wiki/Typhoons_in_the_Philippines
+                return (wind > 119) ? 'Supertyphoon' :
+                    (wind > 63) ? 'Typhoon' :
+                    (wind > 47) ? 'Severe Tropical Storm' :
+                    (wind > 33) ? 'Tropical Storm' :
+                    'Tropical Depression';
+            };
+            //
+            let html = `
+                                            <div class="pop">
+                                                <span class="bold">Year:</span> ${data.SEASON}<br>
+                                                <span class="bold">Name:</span> ${data.NAME}<br>
+                                                <span class="bold">Category:</span> ${cat(+data.HKO_WIND)}<br>
+                                                <hr class="dotted-line">
+                                                <span class="bold">HKO wind:</span> ${data.HKO_WIND} knots<br>
+                                                <span class="bold">HKO pressure:</span> ${data.HKO_PRES} mb<br>
+                                                <span class="bold">Date:</span> ${data.ISO_TIME}<br>
+                                            </div>`;
+
+            //
+            popup.setLngLat(coords)
+                .setHTML(html)
+                .addTo(map);
+        };
+
+        // adds pop, par, storm on load
+        let addMapLayers = function () {
+            // STYLES
+            // par line style
+            let parStyle = {
+                'line-color': "hsla( 0, 0%, 70%, 1)",
+                'line-width': [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    2, 2,
+                    9, 8
+                ]
+            };
+
+            // storm line style
+            let stormStyle = {
+                'line-color': [
+                    "step",
+                    ["get", "USA_WIND"],
+                    "hsla(180, 100%, 90%, 0.4)",
+                    34, "hsla( 270, 100%, 80%, 0.4)",
+                    48, "hsla( 0, 33%, 70%, 0.5)",
+                    64, "hsla( 27, 90%, 50%, 0.4)",
+                    120, "hsla(  0, 1000%, 50%, 0.4)"
+                ],
+                'line-width': [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    2, 0.2,
+                    9, 20
+                ]
+            };
+
+            // LAYERS
+            // add par source (geojson)
+            map.addSource('par-src', {
+                'type': 'geojson',
+                'data': par
+            });
+            // add par layer
+            map.addLayer({
+                'id': 'par',
+                'type': 'line',
+                'source': 'par-src',
+                'paint': parStyle
+            });
+
+            //add storms source (geojson)
+            map.addSource('storms-src', {
+                'type': 'geojson',
+                'data': storms
+            });
+            // add stormslayer
+            map.addLayer({
+                'id': 'storms',
+                'type': 'line',
+                'source': 'storms-src',
+                'paint': stormStyle,
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                }
+            });
+
+        };
+
+        // new map
+        let newMap = function () {
+            // mapbox user access token
+            mapboxgl.accessToken =
+                'pk.eyJ1IjoidGhvbWFzc2kiLCJhIjoiY2o4Zzl5eXR2MGU0dzJxbmFjejF6ZjYycyJ9.fhLXtyEx5VxE_MO65GaNGA';
+
+            // mapbox studio style name: covid-light-02
+            map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/thomassi/ck8remsa5046s1impmt5gxar6',
+                center: [128.5, 20.3],
+                zoom: 3
+            });
+
+            //
+            // map.scrollZoom.disable();
+            let nav = new mapboxgl.NavigationControl();
+            map.addControl(nav, 'top-right');
+            map.setMinZoom(3);
+            map.setMaxZoom(13.0);
+
+            // once map is loaded...
+            map.on('load', function () {
+
+                // add empty storms layer
+                addMapLayers();
+
+                // then fetch data to update map
+                fetchGeoJson('js/storms20162019.json');
+
+
+                // add click event to 'storms' layer (for testing)
+                map.on('click', 'storms', function (e) {
+                    let data = e.features[0].properties;
+                    // console.log('CLICK', data.HKO_WIND);
+                    console.log('CLICK', e.features[0].properties);
+                });
+
+                // add 'move' event to 'storms' layer
+                map.on('mousemove', 'storms', function (e) {
+                    // change cursor style - UI indicator
+                    map.getCanvas().style.cursor = 'pointer';
+                    showPopup(e);
+                });
+
+                // add 'leave' event to 'storms' layer
+                map.on('mouseleave', 'storms', function () {
+                    map.getCanvas().style.cursor = '';
+                    popup.remove();
+                });
+
+            });
+        };
+
+        // initialize buttons
+        let initButtons = function () {
+            // buttons each fetch a data file to update map
+            $('#btn0').on('click', function () {
+                fetchGeoJson();
+                $('.btn').removeClass('active');
+                $(this).addClass('active');
+            });
+            $('#btn1').on('click', function () {
+                fetchGeoJson('js/storms20062010.json');
+                $('.btn').removeClass('active');
+                $(this).addClass('active');
+            });
+            $('#btn2').on('click', function () {
+                fetchGeoJson('js/storms20112015.json');
+                $('.btn').removeClass('active');
+                $(this).addClass('active');
+            });
+            $('#btn3').on('click', function () {
+                fetchGeoJson('js/storms20162019.json');
+                $('.btn').removeClass('active');
+                $(this).addClass('active');
+            });
+            //
+            $('.btn-5yr').on('click', function (e) {
+                let url = `js/storms${e.target.dataset.file}.json`;
+                fetchGeoJson(url);
+                //$('.btn').removeClass('active');
+                //$(this).addClass('active');
+            });
+
+        };
+
+        // start app
+        newMap();
+        initButtons();
+        //
+    </script>
+
+</body>
+
+</html>
